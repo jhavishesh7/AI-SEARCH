@@ -1,0 +1,58 @@
+{
+  "app": {
+    "name": "Neuralaya",
+    "description": "Your AI-powered knowledge companion"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "createOne": "Create one",
+    "signingIn": "Signing in",
+    "signingUp": "Creating account",
+    "success": "Success",
+    "error": "Error",
+    "signedIn": "Signed in successfully!",
+    "signedUp": "Account created successfully!",
+    "emailPlaceholder": "name@example.com",
+    "passwordPlaceholder": "••••••••"
+  },
+  "nav": {
+    "home": "Home",
+    "discover": "Discover",
+    "saved": "Saved",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "article": {
+    "readMore": "Read full article",
+    "askQuestion": "Ask a question about this article...",
+    "noTitle": "No title",
+    "noSource": "Unknown source",
+    "noDescription": "No description available"
+  },
+  "error": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "The requested page was not found.",
+    "unauthorized": "You need to be signed in to access this page."
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search...",
+    "noResults": "No results found",
+    "tryAgain": "Try again"
+  }
+}

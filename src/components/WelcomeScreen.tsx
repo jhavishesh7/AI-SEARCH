@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Sparkles } from "lucide-react";
+import { Search, Image, Paperclip, Mic, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -9,13 +9,59 @@ interface WelcomeScreenProps {
 
 export const WelcomeScreen = ({ onSearch }: WelcomeScreenProps) => {
   const [input, setInput] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const suggestions = [
-    "नेपालको बजेट २०८२ मा के नयाँ छ?",
-    "पोखरामा आजको मौसम कस्तो छ?",
-    "Blockchain नेपालमा कसरी सुरु गर्ने?",
-    "काठमाडौंको सबैभन्दा राम्रो मोमो कहाँ छ?",
-    "नेपालमा AI को भविष्य के छ?",
+    { 
+      icon: "🎓", 
+      text: "Parenting", 
+      desc: "Advice for parents",
+      prompts: [
+        "What is the best way to teach children about money management?",
+        "How can I help my teenager deal with peer pressure?",
+        "What are effective discipline strategies for toddlers?",
+      ]
+    },
+    { 
+      icon: "📚", 
+      text: "NepDex 101", 
+      desc: "Learn the basics",
+      prompts: [
+        "What is NepDex and how does it work?",
+        "How is NepDex different from other search engines?",
+        "What makes NepDex special for Nepal?",
+      ]
+    },
+    { 
+      icon: "🎯", 
+      text: "Learn", 
+      desc: "Explore topics",
+      prompts: [
+        "What is the best way to learn a new language?",
+        "What is a ROTH IRA?",
+        "What is passive income?",
+      ]
+    },
+    { 
+      icon: "📋", 
+      text: "Plan", 
+      desc: "Organize ideas",
+      prompts: [
+        "How do I create a monthly budget plan?",
+        "What are the steps to plan a successful event?",
+        "How can I plan my career path effectively?",
+      ]
+    },
+    { 
+      icon: "📍", 
+      text: "Local", 
+      desc: "Nepal context",
+      prompts: [
+        "What are the best trekking routes in Nepal?",
+        "How is Nepal's economy growing?",
+        "What are traditional Nepali festivals?",
+      ]
+    },
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,86 +72,75 @@ export const WelcomeScreen = ({ onSearch }: WelcomeScreenProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 animate-fade-in">
-      {/* Logo and Title */}
-      <div className="text-center mb-12 animate-slide-up">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="p-3 bg-gradient-accent rounded-2xl shadow-lg">
-            <Sparkles className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            NepDex
-          </h1>
-        </div>
-        <p className="text-xl text-muted-foreground mb-2">
-          👋 Namaste! तपाईंको NepDex मा स्वागत छ
-        </p>
-        <p className="text-sm text-muted-foreground/80">
-          नेपालमै बनेको — विश्वकै स्तरको AI सर्च
-        </p>
+    <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12">
+      {/* Logo */}
+      <div className="mb-16 animate-fade-in">
+        <h1 className="text-6xl font-light tracking-tight text-foreground">
+          nepdex
+        </h1>
       </div>
 
       {/* Search Input */}
-      <form onSubmit={handleSubmit} className="w-full max-w-3xl mb-8">
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+      <form onSubmit={handleSubmit} className="w-full max-w-2xl mb-8 animate-slide-up">
+        <div className="relative">
           <Input
             type="text"
-            placeholder="Ask anything — from Kathmandu's best momo to cosmic physics..."
+            placeholder="Ask anything..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="w-full pl-12 pr-4 py-6 text-lg bg-card/60 backdrop-blur-xl border-border hover:border-primary/50 focus:border-primary transition-all rounded-2xl shadow-lg"
+            className="w-full pl-5 pr-14 py-7 text-base bg-background border-2 border-border/50 hover:border-border focus:border-primary/50 transition-all rounded-xl shadow-sm"
           />
-          <Button
-            type="submit"
-            size="lg"
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-accent hover:opacity-90 transition-all shadow-lg"
-          >
-            Search
-          </Button>
+          
+          {/* Send Button */}
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <Button
+              type="submit"
+              size="icon"
+              disabled={!input.trim()}
+              className="h-9 w-9 rounded-lg bg-primary hover:bg-primary/90"
+            >
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </form>
 
-      {/* Suggestion Chips */}
-      <div className="w-full max-w-3xl">
-        <p className="text-sm text-muted-foreground mb-4">Try asking:</p>
-        <div className="flex flex-wrap gap-2">
-          {suggestions.map((suggestion, index) => (
+      {/* Suggestion Pills */}
+      <div className="flex flex-wrap justify-center gap-3 max-w-2xl animate-slide-up" style={{ animationDelay: "0.1s" }}>
+        {suggestions.map((suggestion, index) => (
+          <div key={index} className="relative">
             <Button
-              key={index}
               variant="outline"
-              className="bg-card/40 backdrop-blur-sm border-border hover:border-primary/50 hover:bg-card/60 transition-all"
-              onClick={() => onSearch(suggestion)}
+              className="h-auto py-2 px-4 rounded-full border-border/50 hover:border-primary/50 hover:bg-muted/50 transition-all"
+              onClick={() => setSelectedCategory(selectedCategory === suggestion.text ? null : suggestion.text)}
             >
-              {suggestion}
+              <span className="mr-2">{suggestion.icon}</span>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-medium">{suggestion.text}</span>
+                <span className="text-xs text-muted-foreground">{suggestion.desc}</span>
+              </div>
             </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Features */}
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
-        {[
-          {
-            title: "🧠 AI-Powered",
-            desc: "Gemini AI साथ स्मार्ट उत्तर",
-          },
-          {
-            title: "🌐 Real-time Web Data",
-            desc: "Live web scraping for current info",
-          },
-          {
-            title: "🇳🇵 Nepali Context",
-            desc: "नेपाली संस्कृति र सन्दर्भमा केन्द्रित",
-          },
-        ].map((feature, index) => (
-          <div
-            key={index}
-            className="p-6 bg-card/40 backdrop-blur-xl border border-border rounded-xl hover:border-primary/50 transition-all animate-slide-up"
-            style={{ animationDelay: `${index * 0.1}s` }}
-          >
-            <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-            <p className="text-sm text-muted-foreground">{feature.desc}</p>
+            
+            {/* Dropdown with prompts */}
+            {selectedCategory === suggestion.text && (
+              <div className="absolute top-full mt-2 left-0 w-80 bg-background border border-border rounded-xl shadow-lg p-3 z-10 animate-slide-up">
+                <div className="space-y-2">
+                  {suggestion.prompts.map((prompt, pIndex) => (
+                    <button
+                      key={pIndex}
+                      onClick={() => {
+                        onSearch(prompt);
+                        setSelectedCategory(null);
+                      }}
+                      className="w-full text-left p-3 text-sm hover:bg-muted/50 rounded-lg transition-colors flex items-start gap-2 group"
+                    >
+                      <Search className="w-4 h-4 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-0.5" />
+                      <span className="group-hover:text-primary">{prompt}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

@@ -1,6 +1,6 @@
 /// <reference path="./types.d.ts" />
-// @ts-ignore: Deno types are resolved at runtime
-import { GoogleGenAI } from "@google/genai";
+
+export {};
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,58 +17,74 @@ interface ScrapedData {
 
 async function scrapeWeb(query: string): Promise<ScrapedData[]> {
   try {
-    // Use DuckDuckGo search as a simpler alternative to Google
-    const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+    // Try using DuckDuckGo Instant Answer API
+    const apiUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1`;
     
-    console.log("Fetching search results from:", searchUrl);
+    console.log("Fetching search results from DuckDuckGo API");
     
-    const response = await fetch(searchUrl, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-      },
-    });
+    const response = await fetch(apiUrl);
 
     if (!response.ok) {
-      console.error("Search failed:", response.status, response.statusText);
-      return [];
+      console.error("API request failed:", response.status);
+      return getFallbackSources(query);
     }
 
-    const html = await response.text();
-    
-    // Simple parsing of DuckDuckGo results
+    const data = await response.json();
     const results: ScrapedData[] = [];
-    const resultRegex = /<a class="result__a"[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g;
-    const snippetRegex = /<a class="result__snippet"[^>]*>([^<]+)<\/a>/g;
-    
-    let match;
-    const urls: string[] = [];
-    const titles: string[] = [];
-    
-    while ((match = resultRegex.exec(html)) !== null && urls.length < 3) {
-      urls.push(match[1]);
-      titles.push(match[2]);
-    }
-    
-    const snippets: string[] = [];
-    while ((match = snippetRegex.exec(html)) !== null && snippets.length < 3) {
-      snippets.push(match[1]);
+
+    // Extract related topics as sources
+    if (data.RelatedTopics && Array.isArray(data.RelatedTopics)) {
+      for (let i = 0; i < Math.min(data.RelatedTopics.length, 5); i++) {
+        const topic = data.RelatedTopics[i];
+        if (topic.FirstURL && topic.Text) {
+          results.push({
+            url: topic.FirstURL,
+            title: topic.Text.split(' - ')[0] || "Related Topic",
+            snippet: topic.Text,
+            content: topic.Text,
+          });
+        }
+      }
     }
 
-    for (let i = 0; i < Math.min(urls.length, 3); i++) {
-      results.push({
-        url: urls[i],
-        title: titles[i] || "Search Result",
-        snippet: snippets[i] || "Relevant web result",
-        content: snippets[i] || "",
-      });
+    // If we got results, return them
+    if (results.length > 0) {
+      console.log("Found", results.length, "sources from DuckDuckGo API");
+      return results;
     }
 
-    console.log("Scraped results:", results.length);
-    return results;
+    // Otherwise return fallback sources
+    return getFallbackSources(query);
   } catch (error) {
     console.error("Scraping error:", error);
-    return [];
+    return getFallbackSources(query);
   }
+}
+
+function getFallbackSources(query: string): ScrapedData[] {
+  // Return relevant fallback sources based on query
+  console.log("Using fallback sources for query:", query);
+  
+  return [
+    {
+      url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+      title: "Google Search Results",
+      snippet: `Search results for: ${query}`,
+      content: `Find more information about ${query} on Google`,
+    },
+    {
+      url: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}`,
+      title: "Wikipedia",
+      snippet: `Encyclopedia article about ${query}`,
+      content: `Learn more about ${query} from Wikipedia`,
+    },
+    {
+      url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
+      title: "YouTube Videos",
+      snippet: `Video content related to ${query}`,
+      content: `Watch videos about ${query} on YouTube`,
+    },
+  ];
 }
 
 Deno.serve(async (req) => {
@@ -81,20 +97,32 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { query, language } = await req.json();
+    // Check authorization header (optional - function is public)
+    const authHeader = req.headers.get("authorization");
+    console.log("Authorization header present:", !!authHeader);
+
+    const { query, language, articleContext } = await req.json();
     console.log("Processing search query:", query, "language:", language);
 
     if (!query) {
       throw new Error("Query is required");
     }
 
+    // Parse article context if provided
+    let parsedArticleContext = null;
+    if (articleContext) {
+      try {
+        parsedArticleContext = typeof articleContext === 'string' ? JSON.parse(articleContext) : articleContext;
+        console.log("Article context provided:", parsedArticleContext.title);
+      } catch (e) {
+        console.error("Failed to parse article context:", e);
+      }
+    }
+
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || "AIzaSyCcJLhphmyywQLnetwn-E_notYhh2XXmJw";
     if (!GEMINI_API_KEY) {
       throw new Error("GEMINI_API_KEY is not configured");
     }
-
-    // Initialize Google GenAI client
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
     // Scrape web data
     const scrapedData = await scrapeWeb(query);
@@ -105,6 +133,12 @@ Deno.serve(async (req) => {
       .map((item, i) => `[Source ${i + 1}] ${item.title}\n${item.snippet}`)
       .join("\n\n");
 
+    // Add article context if available
+    let articleContextText = "";
+    if (parsedArticleContext) {
+      articleContextText = `\n\nArticle Context:\nTitle: ${parsedArticleContext.title}\nDescription: ${parsedArticleContext.description}\nSource: ${parsedArticleContext.source}\n`;
+    }
+
     // Language selection: 'ne' | 'en' | 'auto'
     const lang = language === 'ne' || language === 'en' ? language : 'auto';
     const hasNepali = lang === 'auto' ? /[\u0900-\u097F]/.test(query) : (lang === 'ne');
@@ -112,21 +146,50 @@ Deno.serve(async (req) => {
     // System prompt with formatting guidance
     const systemPrompt = hasNepali
       ? `तपाईं NepDex AI हुनुहुन्छ - नेपालको लागि बनाइएको स्मार्ट खोज सहायक। नेपालीमा मात्र जवाफ दिनुहोस् (यदि प्रयोगकर्ताले अंग्रेजी आग्रह नगरेसम्म)। उत्तरहरू स्पष्ट शीर्षकहरू, साना अनुच्छेद, बुलेट सूची र तथ्य बिन्दुहरूमा सुन्दर ढंगले ढाँचा बनाई प्रस्तुत गर्नुहोस्।`
-      : `You are NepDex AI - a smart search assistant built for Nepal. Reply strictly in English (unless the user explicitly asks for Nepali). Format responses with clear headings, concise paragraphs, bullet lists, and key facts.`;
+      : `You are NepDex AI - a smart search assistant built for Nepal. Reply strictly in English (unless the user explicitly asks for Nepali). Format responses with clear headings, concise paragraphs, bullet lists, and key facts.${parsedArticleContext ? ' You are answering questions about a specific article.' : ''}`;
 
-    const userPrompt = `Query: ${query}\n\nRecent Web Data:\n${webContext || "No additional web data available."}\n\nProvide a comprehensive answer that combines your knowledge with the web data above. Be conversational and helpful. If data is uncertain, say so.`;
+    const userPrompt = `Query: ${query}${articleContextText}\n\nRecent Web Data:\n${webContext || "No additional web data available."}\n\nProvide a comprehensive answer that combines your knowledge with the web data above${parsedArticleContext ? ' and the article context' : ''}. Be conversational and helpful. If data is uncertain, say so.`;
 
-    // Call Google Gemini API using SDK
-    console.log("Calling Google Gemini API with gemini-2.5-flash...");
+    // Call Google Gemini API directly
+    console.log("Calling Google Gemini API with gemini-2.0-flash-exp...");
     
     const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
     
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: fullPrompt,
-    });
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: fullPrompt,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 2048,
+          },
+        }),
+      }
+    );
 
-    const answer = response.text || "Unable to generate answer.";
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
+      console.error("Gemini API error:", geminiResponse.status, errorText);
+      throw new Error(`Gemini API error: ${geminiResponse.status}`);
+    }
+
+    const geminiData = await geminiResponse.json();
+    const answer = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "Unable to generate answer.";
 
     console.log("Search completed successfully");
 

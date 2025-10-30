@@ -1,10 +1,5 @@
 {
-  "nodeModulesDir": "auto",
-  "imports": {
-    "@google/genai": "npm:@google/genai@^0.21.0"
-  },
   "compilerOptions": {
-    "lib": ["deno.window", "deno.unstable"],
-    "types": ["deno"]
+    "lib": ["deno.window", "deno.unstable"]
   }
 }

@@ -38,6 +38,45 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_articles: {
+        Row: {
+          article_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          published_at: string | null
+          source: string | null
+          title: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          source?: string | null
+          title: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          source?: string | null
+          title?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       search_history: {
         Row: {
           conversation_id: string | null
@@ -72,6 +111,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_interests: {
+        Row: {
+          created_at: string
+          id: string
+          interests: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interests?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interests?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
