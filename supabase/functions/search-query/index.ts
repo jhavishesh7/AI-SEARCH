@@ -139,14 +139,17 @@ Deno.serve(async (req) => {
       articleContextText = `\n\nArticle Context:\nTitle: ${parsedArticleContext.title}\nDescription: ${parsedArticleContext.description}\nSource: ${parsedArticleContext.source}\n`;
     }
 
-    // Language selection: 'ne' | 'en' | 'auto'
-    const lang = language === 'ne' || language === 'en' ? language : 'auto';
+    // Language selection: 'ne' | 'en' | 'hi' | 'auto'
+    const lang = language === 'ne' || language === 'en' || language === 'hi' ? language : 'auto';
     const hasNepali = lang === 'auto' ? /[\u0900-\u097F]/.test(query) : (lang === 'ne');
+    const hasHindi = lang === 'hi';
 
     // System prompt with formatting guidance
     const systemPrompt = hasNepali
       ? `तपाईं NepDex AI हुनुहुन्छ - नेपालको लागि बनाइएको स्मार्ट खोज सहायक। नेपालीमा मात्र जवाफ दिनुहोस् (यदि प्रयोगकर्ताले अंग्रेजी आग्रह नगरेसम्म)। उत्तरहरू स्पष्ट शीर्षकहरू, साना अनुच्छेद, बुलेट सूची र तथ्य बिन्दुहरूमा सुन्दर ढंगले ढाँचा बनाई प्रस्तुत गर्नुहोस्।`
-      : `You are NepDex AI - a smart search assistant built for Nepal. Reply strictly in English (unless the user explicitly asks for Nepali). Format responses with clear headings, concise paragraphs, bullet lists, and key facts.${parsedArticleContext ? ' You are answering questions about a specific article.' : ''}`;
+      : hasHindi
+      ? `आप NepDex AI हैं - नेपाल के लिए बनाया गया एक स्मार्ट खोज सहायक। केवल हिंदी में उत्तर दें (जब तक उपयोगकर्ता स्पष्ट रूप से अंग्रेजी नहीं मांगता)। स्पष्ट शीर्षकों, संक्षिप्त पैराग्राफ, बुलेट सूचियों और प्रमुख तथ्यों के साथ उत्तर प्रारूपित करें।${parsedArticleContext ? ' आप एक विशिष्ट लेख के बारे में सवालों के जवाब दे रहे हैं।' : ''}`
+      : `You are NepDex AI - a smart search assistant built for Nepal. Reply strictly in English (unless the user explicitly asks for Nepali or Hindi). Format responses with clear headings, concise paragraphs, bullet lists, and key facts.${parsedArticleContext ? ' You are answering questions about a specific article.' : ''}`;
 
     const userPrompt = `Query: ${query}${articleContextText}\n\nRecent Web Data:\n${webContext || "No additional web data available."}\n\nProvide a comprehensive answer that combines your knowledge with the web data above${parsedArticleContext ? ' and the article context' : ''}. Be conversational and helpful. If data is uncertain, say so.`;
 
@@ -207,6 +210,12 @@ Deno.serve(async (req) => {
               "यस बारेमा थप जानकारी?",
               "नेपालमा यसको प्रभाव के छ?",
               "अरू सम्बन्धित विषयहरू?",
+            ]
+          : hasHindi
+          ? [
+              "इसके बारे में और बताएं",
+              "नेपाल पर इसका प्रभाव क्या है?",
+              "संबंधित विषय क्या हैं?",
             ]
           : [
               "Tell me more about this",

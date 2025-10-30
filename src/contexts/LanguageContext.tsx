@@ -4,8 +4,9 @@ import { useLocalStorage } from 'usehooks-ts';
 // Import your translation files
 import enTranslations from '@/locales/en.json';
 import neTranslations from '@/locales/ne.json';
+import hiTranslations from '@/locales/hi.json';
 
-type Language = 'en' | 'ne';
+type Language = 'en' | 'ne' | 'hi';
 
 interface LanguageContextType {
   language: Language;
@@ -18,6 +19,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const translations = {
   en: enTranslations,
   ne: neTranslations,
+  hi: hiTranslations,
 } as const;
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

@@ -1,26 +1,26 @@
-# Welcome to your Lovable project
+# NepDex - AI Search Assistant
+
+NepDex is a smart search assistant built for Nepal with multilingual support (English, Hindi, and Nepali).
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/f9a89da7-b4f3-4e4b-890d-6f7115a78a8c
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- AI-powered search with Google Gemini
+- Multilingual support (English, Hindi, Nepali)
+- User authentication with Supabase
+- Search history and conversation management
+- Real-time web scraping for up-to-date information
 
-**Use Lovable**
+## How to run locally
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f9a89da7-b4f3-4e4b-890d-6f7115a78a8c) and start prompting.
+**Prerequisites:**
+- Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Supabase CLI installed - [install guide](https://supabase.com/docs/guides/cli)
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+**Setup steps:**
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
@@ -32,9 +32,35 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Copy .env file (already configured with Supabase credentials)
+# The .env file contains:
+# - VITE_SUPABASE_URL
+# - VITE_SUPABASE_ANON_KEY
+# - GEMINI_API_KEY
+
+# Step 5: Start the development server
 npm run dev
+
+# Step 6: In a separate terminal, start Supabase locally (optional for local development)
+supabase start
 ```
+
+**Important Notes:**
+- The GEMINI_API_KEY is already configured in `.env` and `supabase/functions/.env`
+- Text generation requires the edge function to be deployed or running locally
+- Authentication is fully functional with Supabase
+
+## Edit this code
+
+**Use Lovable**
+
+Simply visit the [Lovable Project](https://lovable.dev/projects/f9a89da7-b4f3-4e4b-890d-6f7115a78a8c) and start prompting.
+
+Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
 **Edit a file directly in GitHub**
 

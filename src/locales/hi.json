@@ -1,0 +1,58 @@
+{
+  "app": {
+    "name": "न्यूरालय",
+    "description": "आपका AI-संचालित ज्ञान साथी"
+  },
+  "auth": {
+    "signIn": "साइन इन करें",
+    "signUp": "साइन अप करें",
+    "signOut": "साइन आउट करें",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "noAccount": "खाता नहीं है?",
+    "haveAccount": "पहले से खाता है?",
+    "createOne": "बनाएं",
+    "signingIn": "साइन इन हो रहा है...",
+    "signingUp": "खाता बनाया जा रहा है...",
+    "success": "सफलता",
+    "error": "त्रुटि",
+    "signedIn": "सफलतापूर्वक साइन इन हुए!",
+    "signedUp": "खाता सफलतापूर्वक बनाया गया!",
+    "emailPlaceholder": "नाम@उदाहरण.com",
+    "passwordPlaceholder": "••••••••"
+  },
+  "nav": {
+    "home": "होम",
+    "discover": "खोजें",
+    "saved": "सहेजा गया",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स"
+  },
+  "article": {
+    "readMore": "पूरा लेख पढ़ें",
+    "askQuestion": "इस लेख के बारे में सवाल पूछें...",
+    "noTitle": "शीर्षक उपलब्ध नहीं",
+    "noSource": "अज्ञात स्रोत",
+    "noDescription": "विवरण उपलब्ध नहीं"
+  },
+  "error": {
+    "generic": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+    "notFound": "अनुरोधित पृष्ठ नहीं मिला।",
+    "unauthorized": "इस पृष्ठ तक पहुँचने के लिए आपको साइन इन करना होगा।"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "edit": "संपादित करें",
+    "delete": "हटाएं",
+    "back": "वापस",
+    "next": "अगला",
+    "previous": "पिछला",
+    "search": "खोजें...",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "tryAgain": "पुनः प्रयास करें"
+  }
+}

@@ -26,7 +26,7 @@ export const SearchInterface = ({ query, onNewSearch, conversationId, onConversa
   const [input, setInput] = useState(query);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SearchResult | null>(null);
-  const [language, setLanguage] = useState<'auto' | 'ne' | 'en'>('auto');
+  const [language, setLanguage] = useState<'auto' | 'ne' | 'en' | 'hi'>('auto');
   const [model, setModel] = useState<string>('gemini-2.0-flash-exp');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { toast } = useToast();
@@ -271,6 +271,22 @@ export const SearchInterface = ({ query, onNewSearch, conversationId, onConversa
           {/* Follow-up Input */}
           <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border/50 py-4">
             <div className="max-w-4xl mx-auto px-6" ref={inputContainerRef}>
+              {/* Language Selector */}
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Language:</span>
+                <Select value={language} onValueChange={(val) => setLanguage(val as 'auto' | 'ne' | 'en' | 'hi')}>
+                  <SelectTrigger className="w-32 h-7 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="auto">Auto</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="hi">हिन्दी</SelectItem>
+                    <SelectItem value="ne">नेपाली</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Quick Prompts */}
               {showSuggestions && (
                 <div className="mb-3 flex flex-wrap gap-2 animate-slide-up">
